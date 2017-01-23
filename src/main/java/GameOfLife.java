@@ -21,7 +21,7 @@ public class GameOfLife {
     }
 
     public static void run() throws Exception {
-        GameOfLifeTable grid = new GameOfLifeTable();
+        GameOfLifeTable grid = new GameOfLifeTable(20,20);
         grid.activatePercentageOfCellsRandomly(50);
 
         // Declare and open the frame.
@@ -43,14 +43,14 @@ public class GameOfLife {
             frame.setVisible(false);
 
             // Declare a text area field for the table.
-            JTextArea textField = new JTextArea(GameOfLifeTable.getTableSizeYAxis(), GameOfLifeTable.getTableSizeXAxis());
+            JTextArea textField = new JTextArea(grid.getTableSizeYAxis(), grid.getTableSizeXAxis());
             textField.append(grid.displayCellsInTable().toString());
             textField.setFont(new Font(FONT_OPTION[7], Font.BOLD, SIZE_OPTION[2]));
             textField.setEditable(false);
 
             // Declare a label field.
             String textMessage = grid.getActiveCellCount() +
-                    " cells, originally " +
+                    " cells, was " +
                     grid.getOriginalActiveCellCount() + " (....." +
                     grid.displayPreviousActiveCellCounts() +
                     ")";

@@ -230,8 +230,8 @@ public class GameOfLifeTableShould {
 
         // then
         assertThat(grid.getActiveCellCount()
-                , is(((GameOfLifeTable.getTableSizeXAxis()
-                        * GameOfLifeTable.getTableSizeYAxis()
+                , is(((grid.getTableSizeXAxis()
+                        * grid.getTableSizeYAxis()
                         * percentageToActivate)
                 ) / 100));
     }
@@ -265,6 +265,6 @@ public class GameOfLifeTableShould {
         grid.setPreviousActiveCellCounts(queue);
 
         // then
-        assertEquals(grid.displayPreviousActiveCellCounts().toString(),("1,1,1,1,1,1,1,1,1,1,1,1"));
+        assertEquals(grid.displayPreviousActiveCellCounts().toString(),("1,1,1,1,1,1,1,1"));
     }
 }

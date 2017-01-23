@@ -3,9 +3,11 @@ import java.util.Queue;
 
 public class GameOfLifeTable {
 
-    private static final int TABLE_SIZE_X_AXIS = 96;
-    private static final int TABLE_SIZE_Y_AXIS = 50;
-    private boolean cell[][] = new boolean[TABLE_SIZE_X_AXIS][TABLE_SIZE_Y_AXIS];
+    private final static int TABLE_SIZE_X_AXIS_DEFAULT = 96;
+    private final static int TABLE_SIZE_Y_AXIS_DEFAULT = 50;
+    private final int tableSizeXAxis;
+    private final int tableSizeYAxis;
+    private boolean cell[][];
 
     private int originalActiveCellCount = 0;
     private int activeCellCount = 0;
@@ -17,20 +19,33 @@ public class GameOfLifeTable {
     private static final String NEW_LINE = "\n";
 
     public GameOfLifeTable() {
+        this.tableSizeXAxis = TABLE_SIZE_X_AXIS_DEFAULT;
+        this.tableSizeYAxis = TABLE_SIZE_Y_AXIS_DEFAULT;
+        this.cell = new boolean[tableSizeXAxis][tableSizeYAxis];
+    }
+
+    public GameOfLifeTable(int x, int y) {
+        this.tableSizeXAxis = x;
+        this.tableSizeYAxis = y;
+        this.cell = new boolean[tableSizeXAxis][tableSizeYAxis];
     }
 
     public int getOriginalActiveCellCount() {
         return originalActiveCellCount;
     }
+
     public int getActiveCellCount() {
         return activeCellCount;
     }
-    public static int getTableSizeXAxis() {
-        return TABLE_SIZE_X_AXIS;
+
+    public int getTableSizeXAxis() {
+        return this.tableSizeXAxis;
     }
-    public static int getTableSizeYAxis() {
-        return TABLE_SIZE_Y_AXIS;
+
+    public int getTableSizeYAxis() {
+        return this.tableSizeYAxis;
     }
+
     public static int getHistorySize() {
         return HISTORY_SIZE;
     }
@@ -56,22 +71,23 @@ public class GameOfLifeTable {
     public boolean isCell(int x, int y) {
         try {
             return cell[x][y];
-        } catch (Exception ex) {
+        } catch (ArrayIndexOutOfBoundsException ex) {
             return false;
         }
     }
 
     public boolean tickTableToReviseCells() {
-        boolean[][] revisedCell = new boolean[TABLE_SIZE_X_AXIS][TABLE_SIZE_Y_AXIS];
-        int revisedNumberOfActiveCells = 0;
         boolean changesOccurred = false;
 
         if (originalActiveCellCount == 0) {
             originalActiveCellCount = activeCellCount;
         }
 
-        for (int i = 0; i < TABLE_SIZE_X_AXIS; i++) {
-            for (int j = 0; j < TABLE_SIZE_Y_AXIS; j++) {
+        boolean[][] revisedCell = new boolean[tableSizeXAxis][tableSizeYAxis];
+        int revisedNumberOfActiveCells = 0;
+
+        for (int i = 0; i < tableSizeXAxis; i++) {
+            for (int j = 0; j < tableSizeYAxis; j++) {
                 if (this.tickCellToDetermineAliveOrDead(i, j)) {
                     revisedCell[i][j] = true;
                     revisedNumberOfActiveCells++;
@@ -145,9 +161,9 @@ public class GameOfLifeTable {
     public StringBuffer displayCellsInTable() {
         StringBuffer consoleOutput = new StringBuffer();
 
-        for (int y = (TABLE_SIZE_Y_AXIS - 1); y >= 0; y--) {
+        for (int y = (tableSizeYAxis - 1); y >= 0; y--) {
             consoleOutput.append(" ");
-            for (int x = 0; x < TABLE_SIZE_X_AXIS; x++) {
+            for (int x = 0; x < tableSizeXAxis; x++) {
                 if (isCell(x, y)) {
                     consoleOutput.append(ON_CHARACTER);
                 } else {
@@ -163,23 +179,27 @@ public class GameOfLifeTable {
     }
 
     public void activatePercentageOfCellsRandomly(int percentageToActivate) {
-        int numberOfCellsToActivate = Math.round((TABLE_SIZE_X_AXIS * TABLE_SIZE_Y_AXIS * percentageToActivate) / 100);
-        while (getActiveCellCount()<numberOfCellsToActivate) {
-            int x = (int) Math.round(Math.random() * (TABLE_SIZE_X_AXIS - 1));
-            int y = (int) Math.round(Math.random() * (TABLE_SIZE_Y_AXIS - 1));
+        int numberOfCellsToActivate = Math.round((tableSizeXAxis * tableSizeYAxis * percentageToActivate) / 100);
+        while (getActiveCellCount() < numberOfCellsToActivate) {
+            int x = (int) Math.round(Math.random() * (tableSizeXAxis - 1));
+            int y = (int) Math.round(Math.random() * (tableSizeYAxis - 1));
             activateCell(x, y);
         }
     }
 
     public StringBuffer displayPreviousActiveCellCounts() {
         StringBuffer consoleOutput = new StringBuffer();
+        int entryCount = 0;
         boolean commaRequired = false;
         for (int i : previousActiveCellCounts) {
-            if (commaRequired) {
-                consoleOutput.append(',');
+            entryCount++;
+            if (entryCount > (HISTORY_SIZE - 8)) {
+                if (commaRequired) {
+                    consoleOutput.append(',');
+                }
+                consoleOutput.append(String.format("%d", i));
+                commaRequired = true;
             }
-            consoleOutput.append(String.format("%d", i));
-            commaRequired = true;
         }
         return consoleOutput;
     }
@@ -211,7 +231,7 @@ public class GameOfLifeTable {
                     startColumn = indexOfPattern + lengthOfPattern;
                 }
                 if (numberOfPatternRepetitions == previousActiveCellCountsInFixedWidthStringFormat.length() / pattern.length()) {
-                    System.out.println("There are " + numberOfPatternRepetitions + " repetitions of '" + pattern + "'");
+                    //System.out.println("There are " + numberOfPatternRepetitions + " repetitions of '" + pattern + "'");
                     return true;
                 }
             }
