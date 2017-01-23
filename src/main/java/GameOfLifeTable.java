@@ -79,13 +79,16 @@ public class GameOfLifeTable {
     public boolean tickTableToReviseCells() {
         boolean changesOccurred = false;
 
+        // set the the original count prior to the first tick.
         if (originalActiveCellCount == 0) {
             originalActiveCellCount = activeCellCount;
         }
 
+        // Create new array for the updated details.
         boolean[][] revisedCell = new boolean[tableSizeXAxis][tableSizeYAxis];
         int revisedNumberOfActiveCells = 0;
 
+        // Refresh the existing cells, posting the update to the new array.
         for (int i = 0; i < tableSizeXAxis; i++) {
             for (int j = 0; j < tableSizeYAxis; j++) {
                 if (this.tickCellToDetermineAliveOrDead(i, j)) {
@@ -97,14 +100,18 @@ public class GameOfLifeTable {
                 }
             }
         }
+
+        // Revise the previous array with the new values.
         cell = revisedCell;
         activeCellCount = revisedNumberOfActiveCells;
 
+        // Record the number of active cells in the history queue.
         previousActiveCellCounts.add(activeCellCount);
         if (previousActiveCellCounts.size() > HISTORY_SIZE) {
             previousActiveCellCounts.poll();
         }
 
+        // Indicate whether any changes were encountered.
         return changesOccurred;
     }
 
@@ -189,15 +196,15 @@ public class GameOfLifeTable {
 
     public StringBuffer displayPreviousActiveCellCounts() {
         StringBuffer consoleOutput = new StringBuffer();
-        int entryCount = 0;
+        int arrayIndex = 0;
         boolean commaRequired = false;
-        for (int i : previousActiveCellCounts) {
-            entryCount++;
-            if (entryCount > (HISTORY_SIZE - 8)) {
+        for (int activeCellCount : previousActiveCellCounts) {
+            arrayIndex++;
+            if (arrayIndex > (HISTORY_SIZE - 8)) {
                 if (commaRequired) {
                     consoleOutput.append(',');
                 }
-                consoleOutput.append(String.format("%d", i));
+                consoleOutput.append(String.format("%d", activeCellCount));
                 commaRequired = true;
             }
         }

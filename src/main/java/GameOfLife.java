@@ -15,13 +15,17 @@ public class GameOfLife {
     public static void main(String[] args) {
 
         try {
-            run();
+            if (args.length == 2) {
+                run(new GameOfLifeTable(Integer.parseInt(args[0]), Integer.parseInt(args[1])));
+            } else {
+                run(new GameOfLifeTable(135, 67));
+            }
         } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
-    public static void run() throws Exception {
-        GameOfLifeTable grid = new GameOfLifeTable();
+    public static void run(GameOfLifeTable grid) throws Exception {
         grid.activatePercentageOfCellsRandomly(50);
 
         // Declare and open the frame.
@@ -62,7 +66,7 @@ public class GameOfLife {
             JLabel topLabelField = new JLabel(topTextMessage);
             topLabelField.setHorizontalAlignment(SwingConstants.CENTER);
 
-            // declate the lower text label.
+            // declare the lower text label.
             JLabel bottomLabelField = new JLabel(textMessage);
             bottomLabelField.setHorizontalAlignment(SwingConstants.CENTER);
 
