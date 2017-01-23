@@ -21,7 +21,7 @@ public class GameOfLife {
     }
 
     public static void run() throws Exception {
-        GameOfLifeTable grid = new GameOfLifeTable(20,20);
+        GameOfLifeTable grid = new GameOfLifeTable();
         grid.activatePercentageOfCellsRandomly(50);
 
         // Declare and open the frame.
@@ -40,7 +40,7 @@ public class GameOfLife {
 
             // clear the frame content.
             frame.getContentPane().removeAll();
-            frame.setVisible(false);
+            //frame.setVisible(false);
 
             // Declare a text area field for the table.
             JTextArea textField = new JTextArea(grid.getTableSizeYAxis(), grid.getTableSizeXAxis());

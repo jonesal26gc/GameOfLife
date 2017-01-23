@@ -1,2 +1,7 @@
-.idea/
+.idea
+*.iml
 target/
+logs/
+.settings
+.git
+.project
