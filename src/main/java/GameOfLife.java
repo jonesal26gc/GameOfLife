@@ -43,7 +43,7 @@ public class GameOfLife {
             frame.setVisible(false);
 
             // Declare a text area field for the table.
-            JTextArea textField = new JTextArea(GameOfLifeTable.getTableSize(), GameOfLifeTable.getTableSize());
+            JTextArea textField = new JTextArea(GameOfLifeTable.getTableSizeYAxis(), GameOfLifeTable.getTableSizeXAxis());
             textField.append(grid.displayCellsInTable().toString());
             textField.setFont(new Font(FONT_OPTION[7], Font.BOLD, SIZE_OPTION[2]));
             textField.setEditable(false);

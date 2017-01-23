@@ -8,7 +8,6 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
 
 public class GameOfLifeTableShould {
 
@@ -231,8 +230,8 @@ public class GameOfLifeTableShould {
 
         // then
         assertThat(grid.getActiveCellCount()
-                , is(((GameOfLifeTable.getTableSize()
-                        * GameOfLifeTable.getTableSize()
+                , is(((GameOfLifeTable.getTableSizeXAxis()
+                        * GameOfLifeTable.getTableSizeYAxis()
                         * percentageToActivate)
                 ) / 100));
     }
