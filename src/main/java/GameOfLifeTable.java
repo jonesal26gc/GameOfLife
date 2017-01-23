@@ -21,9 +21,18 @@ public class GameOfLifeTable {
     public int getOriginalActiveCellCount() {
         return originalActiveCellCount;
     }
-
     public int getActiveCellCount() {
         return activeCellCount;
+    }
+    public static int getTableSize() {
+        return TABLE_SIZE;
+    }
+    public static int getHistorySize() {
+        return HISTORY_SIZE;
+    }
+
+    public void setPreviousActiveCellCounts(Queue<Integer> previousActiveCellCounts) {
+        this.previousActiveCellCounts = previousActiveCellCounts;
     }
 
     public void activateCell(int x, int y) {
@@ -81,7 +90,7 @@ public class GameOfLifeTable {
 
     public boolean tickCellToDetermineAliveOrDead(int x, int y) {
         if (isCell(x, y)) {
-            switch (countNumberOfCellNeighbours(x, y)) {
+            switch (countNeighbouringCells(x, y)) {
                 case 2:
                     return true;
                 case 3:
@@ -90,7 +99,7 @@ public class GameOfLifeTable {
                     return false;
             }
         } else {
-            switch (countNumberOfCellNeighbours(x, y)) {
+            switch (countNeighbouringCells(x, y)) {
                 case 3:
                     return true;
                 default:
@@ -99,34 +108,34 @@ public class GameOfLifeTable {
         }
     }
 
-    public int countNumberOfCellNeighbours(int x, int y) {
-        int numberOfCellNeighbours = 0;
+    public int countNeighbouringCells(int x, int y) {
+        int neighbouringCellCount = 0;
 
         if (isCell(x - 1, y + 1)) {
-            numberOfCellNeighbours++;
+            neighbouringCellCount++;
         }
         if (isCell(x, y + 1)) {
-            numberOfCellNeighbours++;
+            neighbouringCellCount++;
         }
         if (isCell(x + 1, y + 1)) {
-            numberOfCellNeighbours++;
+            neighbouringCellCount++;
         }
         if (isCell(x - 1, y)) {
-            numberOfCellNeighbours++;
+            neighbouringCellCount++;
         }
         if (isCell(x + 1, y)) {
-            numberOfCellNeighbours++;
+            neighbouringCellCount++;
         }
         if (isCell(x - 1, y - 1)) {
-            numberOfCellNeighbours++;
+            neighbouringCellCount++;
         }
         if (isCell(x, y - 1)) {
-            numberOfCellNeighbours++;
+            neighbouringCellCount++;
         }
         if (isCell(x + 1, y - 1)) {
-            numberOfCellNeighbours++;
+            neighbouringCellCount++;
         }
-        return numberOfCellNeighbours;
+        return neighbouringCellCount;
     }
 
     public StringBuffer displayCellsInTable() {
@@ -136,10 +145,11 @@ public class GameOfLifeTable {
             consoleOutput.append(" ");
             for (int x = 0; x < TABLE_SIZE; x++) {
                 if (isCell(x, y)) {
-                    consoleOutput.append(ON_CHARACTER + " ");
+                    consoleOutput.append(ON_CHARACTER);
                 } else {
-                    consoleOutput.append(OFF_CHARACTER + " ");
+                    consoleOutput.append(OFF_CHARACTER);
                 }
+                consoleOutput.append(" ");
             }
             if (y > 0) {
                 consoleOutput.append(NEW_LINE);
@@ -148,8 +158,9 @@ public class GameOfLifeTable {
         return consoleOutput;
     }
 
-    public void activateSomeCellsRandomly(int percentageToActivate) {
-        for (int i = 0; i < ((TABLE_SIZE * TABLE_SIZE * percentageToActivate)/100); i++) {
+    public void activatePercentageOfCellsRandomly(int percentageToActivate) {
+        int numberOfCellsToActivate = Math.round((TABLE_SIZE * TABLE_SIZE * percentageToActivate) / 100);
+        while (getActiveCellCount()<numberOfCellsToActivate) {
             int x = (int) Math.round(Math.random() * (TABLE_SIZE - 1));
             int y = (int) Math.round(Math.random() * (TABLE_SIZE - 1));
             activateCell(x, y);

@@ -22,53 +22,58 @@ public class GameOfLife {
 
     public static void run() throws Exception {
         GameOfLifeTable grid = new GameOfLifeTable();
-        grid.activateSomeCellsRandomly(50);
+        grid.activatePercentageOfCellsRandomly(50);
 
         // Declare and open the frame.
         JFrame frame = new JFrame("Game of Life");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         boolean gameComplete = false;
-        String gameCompleteMessage = " - running";
+        String gameCompleteMessage = "";
 
-        int i = 1;
+        int i = 0;
         while (true) {
             i++;
-            frame.setVisible(false);
-            frame.getContentPane().removeAll();
 
-            // if there were no changes, or no active cells, then terminate.
+            // update the table, and be conscious of any changes occurring.
             boolean changesOccurred = grid.tickTableToReviseCells();
 
-            // Declare a text area field.
-            JTextArea textField = new JTextArea(40, 40);
+            // clear the frame content.
+            frame.getContentPane().removeAll();
+            frame.setVisible(false);
+
+            // Declare a text area field for the table.
+            JTextArea textField = new JTextArea(GameOfLifeTable.getTableSize(), GameOfLifeTable.getTableSize());
             textField.append(grid.displayCellsInTable().toString());
-            textField.setEditable(false);
             textField.setFont(new Font(FONT_OPTION[7], Font.BOLD, SIZE_OPTION[2]));
+            textField.setEditable(false);
 
             // Declare a label field.
             String textMessage = grid.getActiveCellCount() +
                     " cells, originally " +
-                    grid.getOriginalActiveCellCount() + " (..." +
+                    grid.getOriginalActiveCellCount() + " (....." +
                     grid.displayPreviousActiveCellCounts() +
                     ")";
 
-            String topTextMessage = "Ticks: " + String.format("%1$d", i);
+            String topTextMessage = "Ticks: " + String.format("%04d", i);
             if (gameComplete) {
                 topTextMessage = topTextMessage.concat(gameCompleteMessage);
             }
             JLabel topLabelField = new JLabel(topTextMessage);
             topLabelField.setHorizontalAlignment(SwingConstants.CENTER);
 
+            // declate the lower text label.
             JLabel bottomLabelField = new JLabel(textMessage);
             bottomLabelField.setHorizontalAlignment(SwingConstants.CENTER);
 
+            // add content to the frame and display the screen.
             frame.getContentPane().add(topLabelField, BorderLayout.NORTH);
             frame.getContentPane().add(textField, BorderLayout.CENTER);
             frame.getContentPane().add(bottomLabelField, BorderLayout.SOUTH);
             frame.pack();
             frame.setVisible(true);
 
+            // If we have finished or stabilised, then change characteristics of the screen.
             if ((!changesOccurred)
                     || grid.getActiveCellCount() == 0
                     || grid.isCellMovementStabilised()) {

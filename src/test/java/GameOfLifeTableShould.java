@@ -1,9 +1,19 @@
 import org.junit.Test;
+import org.mockito.Mock;
+
+import java.util.LinkedList;
+import java.util.Queue;
 
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
 public class GameOfLifeTableShould {
+
+    @Mock
+    GameOfLifeTable MockTheGameOfLifeTable;
 
     @Test
     public void
@@ -50,7 +60,7 @@ public class GameOfLifeTableShould {
         grid.activateCell(2, 0);
 
         // then
-        assertThat(grid.countNumberOfCellNeighbours(1, 1), is(2));
+        assertThat(grid.countNeighbouringCells(1, 1), is(2));
     }
 
     @Test
@@ -213,10 +223,49 @@ public class GameOfLifeTableShould {
 
     @Test
     public void
-    display() {
-        for (int i = 9500; i < 9800; i++) {
-            System.out.println(i + "=" + Character.valueOf((char) i));
-        }
+    randomly_activate_a_proportion_of_cells() {
+        // given
+        GameOfLifeTable grid = new GameOfLifeTable();
+        int percentageToActivate = 50;
+        grid.activatePercentageOfCellsRandomly(percentageToActivate);
+
+        // then
+        assertThat(grid.getActiveCellCount()
+                , is(((GameOfLifeTable.getTableSize()
+                        * GameOfLifeTable.getTableSize()
+                        * percentageToActivate)
+                ) / 100));
     }
 
+    @Test
+    public void
+    check_for_repeating_pattern_signifying_stability() {
+        // given
+        GameOfLifeTable grid = new GameOfLifeTable();
+
+        Queue<Integer> queue = new LinkedList<Integer>();
+        for (int i = 0; i < GameOfLifeTable.getHistorySize(); i++) {
+            queue.add(1);
+        }
+        grid.setPreviousActiveCellCounts(queue);
+
+        //then
+        assertTrue(grid.isCellMovementStabilised());
+    }
+
+    @Test
+    public void
+    display_active_cell_history() {
+        // given
+        GameOfLifeTable grid = new GameOfLifeTable();
+
+        Queue<Integer> queue = new LinkedList<Integer>();
+        for (int i = 0; i < GameOfLifeTable.getHistorySize(); i++) {
+            queue.add(1);
+        }
+        grid.setPreviousActiveCellCounts(queue);
+
+        // then
+        assertEquals(grid.displayPreviousActiveCellCounts().toString(),("1,1,1,1,1,1,1,1,1,1,1,1"));
+    }
 }
