@@ -11,6 +11,8 @@ import static org.junit.Assert.assertTrue;
 
 public class GameOfLifeTableShould {
 
+    public static final int TABLE_AXIS_VALUE_SMALL = 5;
+
     @Mock
     GameOfLifeTable MockTheGameOfLifeTable;
 
@@ -18,7 +20,7 @@ public class GameOfLifeTableShould {
     public void
     initialise_the_grid() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable();
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
 
         // then
         assertThat(grid.getActiveCellCount(), is(0));
@@ -28,7 +30,7 @@ public class GameOfLifeTableShould {
     public void
     make_a_cell_alive() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable();
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
         grid.activateCell(1, 1);
 
         // then
@@ -39,7 +41,7 @@ public class GameOfLifeTableShould {
     public void
     make_a_cell_not_alive() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable();
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
         grid.activateCell(1, 1);
 
         // when
@@ -54,7 +56,7 @@ public class GameOfLifeTableShould {
     public void
     count_the_neighbours() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable();
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
         grid.activateCell(0, 2);
         grid.activateCell(2, 0);
 
@@ -66,7 +68,7 @@ public class GameOfLifeTableShould {
     public void
     activate_cell() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable();
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
         grid.activateCell(2, 0);
         grid.activateCell(2, 1);
         grid.activateCell(2, 2);
@@ -79,7 +81,7 @@ public class GameOfLifeTableShould {
     public void
     deactivate_cell_with_0_neighbours() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable();
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
         grid.activateCell(1, 1);
 
         // then
@@ -91,7 +93,7 @@ public class GameOfLifeTableShould {
     public void
     deactivate_cell_with_1_neighbour() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable();
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
         grid.activateCell(1, 1);
 
         // when
@@ -105,7 +107,7 @@ public class GameOfLifeTableShould {
     public void
     keep_cell_with_2_neighbours() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable();
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
         grid.activateCell(1, 1);
 
         // when
@@ -120,7 +122,7 @@ public class GameOfLifeTableShould {
     public void
     keep_cell_with_3_neighbours() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable();
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
         grid.activateCell(1, 1);
 
         // when
@@ -136,7 +138,7 @@ public class GameOfLifeTableShould {
     public void
     deactivate_cell_with_4_neighbours() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable();
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
         grid.activateCell(1, 1);
 
         // when
@@ -153,7 +155,7 @@ public class GameOfLifeTableShould {
     public void
     deactivate_cell_with_8_neighbours() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable();
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
         grid.activateCell(1, 1);
 
         // when
@@ -174,13 +176,13 @@ public class GameOfLifeTableShould {
     public void
     perform_tick_activities_for_all_cells_that_die() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable();
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
         grid.activateCell(1, 1);
 
         // when
-        GameOfLifeTable newGrid = new GameOfLifeTable();
-        for (int i = 0; i < 100; i++) {
-            for (int j = 0; j < 100; j++) {
+        GameOfLifeTable newGrid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL, TABLE_AXIS_VALUE_SMALL);
+        for (int i = 0; i < grid.getTableSizeXAxis(); i++) {
+            for (int j = 0; j < grid.getTableSizeYAxis(); j++) {
                 if (grid.tickCellToDetermineAliveOrDead(i, j)) {
                     newGrid.activateCell(i, j);
                 }
@@ -196,7 +198,7 @@ public class GameOfLifeTableShould {
     public void
     perform_tick_activities_for_all_cells_that_spawn() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable();
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
         grid.activateCell(2, 0);
         grid.activateCell(2, 1);
         grid.activateCell(2, 2);
@@ -211,9 +213,6 @@ public class GameOfLifeTableShould {
         System.out.println("Second tick:");
         System.out.println(grid.displayCellsInTable());
         grid.tickTableToReviseCells();
-        System.out.println("Third tick:");
-        System.out.println(grid.displayCellsInTable());
-        grid.tickTableToReviseCells();
 
         // then
         assertThat(grid.isCell(2, 1), is(true));
@@ -224,7 +223,7 @@ public class GameOfLifeTableShould {
     public void
     randomly_activate_a_proportion_of_cells() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable();
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
         int percentageToActivate = 50;
         grid.activatePercentageOfCellsRandomly(percentageToActivate);
 
@@ -234,6 +233,7 @@ public class GameOfLifeTableShould {
                         * grid.getTableSizeYAxis()
                         * percentageToActivate)
                 ) / 100));
+        System.out.println(grid.displayCellsInTable());
     }
 
     @Test
