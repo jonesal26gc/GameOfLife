@@ -47,7 +47,7 @@ public enum GameOfLifeRule {
         throw new RuntimeException("Invalid GameOfLife rule " + rule + ".");
     }
 
-    boolean isAfterTick(int neighbourCount, boolean isAlive) {
+    boolean isCellAliveAfterTick(int neighbourCount, boolean isAlive) {
         if (isAlive) {
             return numberOfNeighboursToStayAlive.contains(neighbourCount);
         }

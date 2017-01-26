@@ -80,7 +80,7 @@ public class GameOfLifeTableShould {
         grid.activateCell(2, 2);
 
         // then
-        assertThat(grid.tickCellToDetermineAliveOrDead(1, 1), is(true));
+        assertThat(grid.reviseCellToDetermineAliveOrDead(1, 1), is(true));
     }
 
     @Test
@@ -91,7 +91,7 @@ public class GameOfLifeTableShould {
         grid.activateCell(1, 1);
 
         // then
-        assertThat(grid.tickCellToDetermineAliveOrDead(1, 1), is(false));
+        assertThat(grid.reviseCellToDetermineAliveOrDead(1, 1), is(false));
     }
 
 
@@ -106,7 +106,7 @@ public class GameOfLifeTableShould {
         grid.activateCell(2, 1);
 
         // then
-        assertThat(grid.tickCellToDetermineAliveOrDead(1, 1), is(false));
+        assertThat(grid.reviseCellToDetermineAliveOrDead(1, 1), is(false));
     }
 
     @Test
@@ -121,7 +121,7 @@ public class GameOfLifeTableShould {
         grid.activateCell(2, 2);
 
         // then
-        assertThat(grid.tickCellToDetermineAliveOrDead(1, 1), is(true));
+        assertThat(grid.reviseCellToDetermineAliveOrDead(1, 1), is(true));
     }
 
     @Test
@@ -137,7 +137,7 @@ public class GameOfLifeTableShould {
         grid.activateCell(0, 2);
 
         // then
-        assertThat(grid.tickCellToDetermineAliveOrDead(1, 1), is(true));
+        assertThat(grid.reviseCellToDetermineAliveOrDead(1, 1), is(true));
     }
 
     @Test
@@ -154,7 +154,7 @@ public class GameOfLifeTableShould {
         grid.activateCell(1, 0);
 
         // then
-        assertThat(grid.tickCellToDetermineAliveOrDead(1, 1), is(false));
+        assertThat(grid.reviseCellToDetermineAliveOrDead(1, 1), is(false));
     }
 
     @Test
@@ -175,7 +175,7 @@ public class GameOfLifeTableShould {
         grid.activateCell(1, 2);
 
         // then
-        assertThat(grid.tickCellToDetermineAliveOrDead(1, 1), is(false));
+        assertThat(grid.reviseCellToDetermineAliveOrDead(1, 1), is(false));
     }
 
     @Test
@@ -189,7 +189,7 @@ public class GameOfLifeTableShould {
         GameOfLifeTable newGrid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL, TABLE_AXIS_VALUE_SMALL,PERCENTAGE_TO_ACTIVATE_SMALL, GameOfLifeRule.STANDARD);
         for (int i = 0; i < grid.getTableSizeXAxis(); i++) {
             for (int j = 0; j < grid.getTableSizeYAxis(); j++) {
-                if (grid.tickCellToDetermineAliveOrDead(i, j)) {
+                if (grid.reviseCellToDetermineAliveOrDead(i, j)) {
                     newGrid.activateCell(i, j);
                 }
             }
@@ -257,7 +257,7 @@ public class GameOfLifeTableShould {
         grid.setPreviousActiveCellCounts(queue);
 
         //then
-        assertTrue(grid.isCellMovementStabilised());
+        assertTrue(grid.isCellMovementStable());
     }
 
     @Test
@@ -273,7 +273,7 @@ public class GameOfLifeTableShould {
         grid.setPreviousActiveCellCounts(queue);
 
         // then
-        assertEquals(grid.displayPreviousActiveCellCounts().toString(),("1,1,1,1,1,1,1,1"));
+        assertEquals(grid.displayPreviousEightActiveCellCounts().toString(),("1,1,1,1,1,1,1,1"));
     }
 
     @Test

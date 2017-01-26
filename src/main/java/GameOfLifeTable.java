@@ -27,7 +27,7 @@ public class GameOfLifeTable {
     }
 
     public GameOfLifeTable(int x, int y, int percentageToActivate) {
-        this(x, y, percentageToActivate,GameOfLifeRule.lookUp((int) Math.round(Math.random() * 2) + 1));
+        this(x, y, percentageToActivate, GameOfLifeRule.lookUp((int) Math.round(Math.random() * 2) + 1));
     }
 
     public int getOriginalActiveCellCount() {
@@ -95,7 +95,7 @@ public class GameOfLifeTable {
         // Refresh the existing cells, posting the update to the new array.
         for (int i = 0; i < tableSizeXAxis; i++) {
             for (int j = 0; j < tableSizeYAxis; j++) {
-                if (this.tickCellToDetermineAliveOrDead(i, j)) {
+                if (this.reviseCellToDetermineAliveOrDead(i, j)) {
                     revisedCell[i][j] = true;
                     revisedNumberOfActiveCells++;
                     if (revisedCell[i][j] != cell[i][j]) {
@@ -119,10 +119,8 @@ public class GameOfLifeTable {
         return changesOccurred;
     }
 
-    public boolean tickCellToDetermineAliveOrDead(int x, int y) {
-        int neighbourCount = countNeighbouringCells(x, y);
-        boolean isAlive = isAlive(x, y);
-        return gameOfLifeRule.isAfterTick(neighbourCount, isAlive);
+    public boolean reviseCellToDetermineAliveOrDead(int x, int y) {
+        return gameOfLifeRule.isCellAliveAfterTick(countNeighbouringCells(x, y), isAlive(x, y));
     }
 
     public int countNeighbouringCells(int x, int y) {
@@ -161,12 +159,7 @@ public class GameOfLifeTable {
         for (int y = (tableSizeYAxis - 1); y >= 0; y--) {
             consoleOutput.append(" ");
             for (int x = 0; x < tableSizeXAxis; x++) {
-                if (isAlive(x, y)) {
-                    consoleOutput.append(ON_CHARACTER);
-                } else {
-                    consoleOutput.append(OFF_CHARACTER);
-                }
-                consoleOutput.append(" ");
+                consoleOutput.append(chooseCharacterForCellDisplay(y, x)).append(" ");
             }
             if (y > 0) {
                 consoleOutput.append(NEW_LINE);
@@ -175,16 +168,22 @@ public class GameOfLifeTable {
         return consoleOutput;
     }
 
+    private char chooseCharacterForCellDisplay(int y, int x) {
+        if (isAlive(x, y)) {
+            return ON_CHARACTER;
+        }
+        return OFF_CHARACTER;
+    }
+
     public void activatePercentageOfCellsRandomly() {
         int numberOfCellsToActivate = Math.round((tableSizeXAxis * tableSizeYAxis * percentageToActivate) / 100);
         while (getActiveCellCount() < numberOfCellsToActivate) {
-            int x = (int) Math.round(Math.random() * (tableSizeXAxis - 1));
-            int y = (int) Math.round(Math.random() * (tableSizeYAxis - 1));
-            activateCell(x, y);
+            activateCell((int) Math.round(Math.random() * (tableSizeXAxis - 1)),
+                    (int) Math.round(Math.random() * (tableSizeYAxis - 1)));
         }
     }
 
-    public StringBuffer displayPreviousActiveCellCounts() {
+    public StringBuffer displayPreviousEightActiveCellCounts() {
         StringBuffer consoleOutput = new StringBuffer();
         int arrayIndex = 0;
         boolean commaRequired = false;
@@ -201,38 +200,36 @@ public class GameOfLifeTable {
         return consoleOutput;
     }
 
-    public boolean isCellMovementStabilised() {
+    public boolean isCellMovementStable() {
         if (previousActiveCellCounts.size() < HISTORY_SIZE) {
             return false;
-        } else {
-
-            // transfer the queue contents into a contiguous string of active cell counts.
-            StringBuilder previousActiveCellCountsInFixedWidthStringFormat = new StringBuilder();
-            for (Integer activeCellCount : previousActiveCellCounts) {
-                previousActiveCellCountsInFixedWidthStringFormat.append(String.format("%04d", activeCellCount));
-            }
-
-            // check for repeating patterns of varying lengths.
-            for (int activeCellCountsInPattern = 1; activeCellCountsInPattern < 5; activeCellCountsInPattern++) {
-                int lengthOfPattern = (activeCellCountsInPattern * 4);
-                String pattern = previousActiveCellCountsInFixedWidthStringFormat.substring(0, lengthOfPattern);
-
-                int startColumn = 0;
-                int numberOfPatternRepetitions = 0;
-                while (true) {
-                    int indexOfPattern = previousActiveCellCountsInFixedWidthStringFormat.indexOf(pattern, startColumn);
-                    if (indexOfPattern != startColumn) {
-                        break;
-                    }
-                    numberOfPatternRepetitions++;
-                    startColumn = indexOfPattern + lengthOfPattern;
-                }
-                if (numberOfPatternRepetitions == previousActiveCellCountsInFixedWidthStringFormat.length() / pattern.length()) {
-                    //System.out.println("There are " + numberOfPatternRepetitions + " repetitions of '" + pattern + "'");
-                    return true;
-                }
-            }
-            return false;
         }
+        // transfer the queue contents into a contiguous string of active cell counts.
+        StringBuilder previousActiveCellCountsInFixedWidthStringFormat = new StringBuilder();
+        for (Integer activeCellCount : previousActiveCellCounts) {
+            previousActiveCellCountsInFixedWidthStringFormat.append(String.format("%04d", activeCellCount));
+        }
+        // check for repeating patterns of varying lengths.
+        for (int activeCellCountsInPattern = 1; activeCellCountsInPattern < 5; activeCellCountsInPattern++) {
+            int lengthOfPattern = (activeCellCountsInPattern * 4);
+            String pattern = previousActiveCellCountsInFixedWidthStringFormat.substring(0, lengthOfPattern);
+
+            int startColumn = 0;
+            int numberOfPatternRepetitions = 0;
+            while (true) {
+                int indexOfPattern = previousActiveCellCountsInFixedWidthStringFormat.indexOf(pattern, startColumn);
+                if (indexOfPattern != startColumn) {
+                    break;
+                }
+                numberOfPatternRepetitions++;
+                startColumn = indexOfPattern + lengthOfPattern;
+            }
+
+            if (numberOfPatternRepetitions == previousActiveCellCountsInFixedWidthStringFormat.length() / pattern.length()) {
+                //System.out.println("There are " + numberOfPatternRepetitions + " repetitions of '" + pattern + "'");
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -16,37 +16,38 @@ public class GameOfLife {
 
     public static void main(String[] args) {
         try {
-            run(constructGameFrom(args));
+            run(constructGameFromArguments(args));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    private static GameOfLifeTable constructGameFrom(String[] args) {
+    private static GameOfLifeTable constructGameFromArguments(String[] args) {
         if (args.length == 3) {
-            return randomGameWithDimensionFrom(args);
+            return randomGameWithDimensionsFromArguments(args);
         }
         if (args.length == 4) {
-            return randomGameWithDimensionsAndPatternFrom(args);
+            return randomGameWithDimensionsAndPatternFromArguments(args);
         }
-        return defaultGame();
+        return defaultGameWithPresetArguments();
     }
 
-    private static GameOfLifeTable defaultGame() {
-        return new GameOfLifeTable(135, 67, 50, GameOfLifeRule.STANDARD);
-    }
-
-    private static GameOfLifeTable randomGameWithDimensionsAndPatternFrom(String[] args) {
+    private static GameOfLifeTable randomGameWithDimensionsAndPatternFromArguments(String[] args) {
         return new GameOfLifeTable(Integer.parseInt(args[0]),
                 Integer.parseInt(args[1]),
                 Integer.parseInt(args[2]),
                 GameOfLifeRule.lookUp(Integer.parseInt(args[3])));
     }
 
-    private static GameOfLifeTable randomGameWithDimensionFrom(String[] args) {
+    private static GameOfLifeTable randomGameWithDimensionsFromArguments(String[] args) {
         return new GameOfLifeTable(Integer.parseInt(args[0]),
                 Integer.parseInt(args[1]),
                 Integer.parseInt(args[2]));
+    }
+
+    private static GameOfLifeTable defaultGameWithPresetArguments() {
+        //return new GameOfLifeTable(135, 67, 50, GameOfLifeRule.STANDARD);
+        return new GameOfLifeTable(10, 10, 50, GameOfLifeRule.STANDARD);
     }
 
     public static void run(GameOfLifeTable grid) throws Exception {
@@ -59,10 +60,9 @@ public class GameOfLife {
         boolean gameComplete = false;
         String gameCompleteMessage = "";
 
-        for (int generation = 1; true; generation++) {
+        for (int tick = 1; true; tick++) {
             // clear the frame content.
             frame.getContentPane().removeAll();
-            //frame.setVisible(false);
 
             // Declare a text area field for the table.
             JTextArea textField = new JTextArea(grid.getTableSizeYAxis(), grid.getTableSizeXAxis());
@@ -74,10 +74,10 @@ public class GameOfLife {
             String textMessage = grid.getActiveCellCount() +
                     " cells, was " +
                     grid.getOriginalActiveCellCount() + " (....." +
-                    grid.displayPreviousActiveCellCounts() +
+                    grid.displayPreviousEightActiveCellCounts() +
                     ")";
 
-            String topTextMessage = String.format("Rule:%s - Ticks: %04d", grid.getGameOfLifeRule().getRuleName(), generation);
+            String topTextMessage = String.format("Rule:%s - Ticks: %04d", grid.getGameOfLifeRule().getRuleName(), tick);
             if (gameComplete) {
                 topTextMessage = topTextMessage.concat(gameCompleteMessage);
             }
@@ -95,7 +95,7 @@ public class GameOfLife {
             frame.pack();
             frame.setVisible(true);
 
-            if (generation == 1) {
+            if (tick == 1) {
                 Thread.sleep(WINDOW_DISPLAY_TIME_IN_MILLISECONDS_SLOW);
             }
 
@@ -105,23 +105,24 @@ public class GameOfLife {
             // If we have finished or stabilised, then change characteristics of the screen.
             if ((!changesOccurred)
                     || grid.getActiveCellCount() == 0
-                    || grid.isCellMovementStabilised()) {
+                    || grid.isCellMovementStable()) {
                 if (!gameComplete) {
-                    gameCompleteMessage = " - Stabilised after " + generation + " ticks.";
+                    gameCompleteMessage = " - Stabilised after " + tick + " ticks.";
                     gameComplete = true;
                 }
             }
-
-            if (gameComplete) {
-                Thread.sleep(WINDOW_DISPLAY_TIME_IN_MILLISECONDS_SLOW);
-            } else {
-                if (grid.getActiveCellCount() > 150) {
-                    Thread.sleep(WINDOW_DISPLAY_TIME_IN_MILLISECONDS_FAST);
-                } else {
-                    Thread.sleep(WINDOW_DISPLAY_TIME_IN_MILLISECONDS_MEDIUM);
-                }
-            }
+            Thread.sleep(determineSleepPeriodBetweenDisplays(grid, gameComplete));
         }
         //frame.dispose();
+    }
+
+    private static int determineSleepPeriodBetweenDisplays(GameOfLifeTable grid, boolean gameComplete) {
+        if (gameComplete) {
+            return WINDOW_DISPLAY_TIME_IN_MILLISECONDS_SLOW;
+        }
+        if (grid.getActiveCellCount() < 150) {
+            return WINDOW_DISPLAY_TIME_IN_MILLISECONDS_MEDIUM;
+        }
+        return WINDOW_DISPLAY_TIME_IN_MILLISECONDS_FAST;
     }
 }
