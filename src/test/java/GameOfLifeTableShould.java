@@ -4,6 +4,9 @@ import org.mockito.Mock;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.core.AllOf.allOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -11,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 
 public class GameOfLifeTableShould {
 
+    public static final int PERCENTAGE_TO_ACTIVATE_SMALL =25;
     public static final int TABLE_AXIS_VALUE_SMALL = 5;
 
     @Mock
@@ -20,7 +24,7 @@ public class GameOfLifeTableShould {
     public void
     initialise_the_grid() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL, PERCENTAGE_TO_ACTIVATE_SMALL, GameOfLifeRule.STANDARD);
 
         // then
         assertThat(grid.getActiveCellCount(), is(0));
@@ -30,7 +34,7 @@ public class GameOfLifeTableShould {
     public void
     make_a_cell_alive() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL, PERCENTAGE_TO_ACTIVATE_SMALL, GameOfLifeRule.STANDARD);
         grid.activateCell(1, 1);
 
         // then
@@ -41,7 +45,7 @@ public class GameOfLifeTableShould {
     public void
     make_a_cell_not_alive() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL,PERCENTAGE_TO_ACTIVATE_SMALL, GameOfLifeRule.STANDARD);
         grid.activateCell(1, 1);
 
         // when
@@ -56,7 +60,7 @@ public class GameOfLifeTableShould {
     public void
     count_the_neighbours() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL,PERCENTAGE_TO_ACTIVATE_SMALL, GameOfLifeRule.STANDARD);
         grid.activateCell(0, 2);
         grid.activateCell(2, 0);
 
@@ -68,7 +72,7 @@ public class GameOfLifeTableShould {
     public void
     activate_cell() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL,PERCENTAGE_TO_ACTIVATE_SMALL, GameOfLifeRule.STANDARD);
         grid.activateCell(2, 0);
         grid.activateCell(2, 1);
         grid.activateCell(2, 2);
@@ -81,7 +85,7 @@ public class GameOfLifeTableShould {
     public void
     deactivate_cell_with_0_neighbours() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL,PERCENTAGE_TO_ACTIVATE_SMALL, GameOfLifeRule.STANDARD);
         grid.activateCell(1, 1);
 
         // then
@@ -93,7 +97,7 @@ public class GameOfLifeTableShould {
     public void
     deactivate_cell_with_1_neighbour() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL,PERCENTAGE_TO_ACTIVATE_SMALL, GameOfLifeRule.STANDARD);
         grid.activateCell(1, 1);
 
         // when
@@ -107,7 +111,7 @@ public class GameOfLifeTableShould {
     public void
     keep_cell_with_2_neighbours() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL,PERCENTAGE_TO_ACTIVATE_SMALL, GameOfLifeRule.STANDARD);
         grid.activateCell(1, 1);
 
         // when
@@ -122,7 +126,7 @@ public class GameOfLifeTableShould {
     public void
     keep_cell_with_3_neighbours() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL,PERCENTAGE_TO_ACTIVATE_SMALL, GameOfLifeRule.STANDARD);
         grid.activateCell(1, 1);
 
         // when
@@ -138,7 +142,7 @@ public class GameOfLifeTableShould {
     public void
     deactivate_cell_with_4_neighbours() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL,PERCENTAGE_TO_ACTIVATE_SMALL, GameOfLifeRule.STANDARD);
         grid.activateCell(1, 1);
 
         // when
@@ -155,7 +159,7 @@ public class GameOfLifeTableShould {
     public void
     deactivate_cell_with_8_neighbours() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL,PERCENTAGE_TO_ACTIVATE_SMALL, GameOfLifeRule.STANDARD);
         grid.activateCell(1, 1);
 
         // when
@@ -176,11 +180,11 @@ public class GameOfLifeTableShould {
     public void
     perform_tick_activities_for_all_cells_that_die() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL,PERCENTAGE_TO_ACTIVATE_SMALL, GameOfLifeRule.STANDARD);
         grid.activateCell(1, 1);
 
         // when
-        GameOfLifeTable newGrid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL, TABLE_AXIS_VALUE_SMALL);
+        GameOfLifeTable newGrid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL, TABLE_AXIS_VALUE_SMALL,PERCENTAGE_TO_ACTIVATE_SMALL, GameOfLifeRule.STANDARD);
         for (int i = 0; i < grid.getTableSizeXAxis(); i++) {
             for (int j = 0; j < grid.getTableSizeYAxis(); j++) {
                 if (grid.tickCellToDetermineAliveOrDead(i, j)) {
@@ -198,7 +202,7 @@ public class GameOfLifeTableShould {
     public void
     perform_tick_activities_for_all_cells_that_spawn() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL,PERCENTAGE_TO_ACTIVATE_SMALL, GameOfLifeRule.STANDARD);
         grid.activateCell(2, 0);
         grid.activateCell(2, 1);
         grid.activateCell(2, 2);
@@ -223,15 +227,17 @@ public class GameOfLifeTableShould {
     public void
     randomly_activate_a_proportion_of_cells() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,TABLE_AXIS_VALUE_SMALL);
-        int percentageToActivate = 50;
-        grid.activatePercentageOfCellsRandomly(percentageToActivate);
+        GameOfLifeTable grid = new GameOfLifeTable(TABLE_AXIS_VALUE_SMALL,
+                TABLE_AXIS_VALUE_SMALL,
+                PERCENTAGE_TO_ACTIVATE_SMALL,
+                GameOfLifeRule.STANDARD);
+        grid.activatePercentageOfCellsRandomly();
 
         // then
         assertThat(grid.getActiveCellCount()
                 , is(((grid.getTableSizeXAxis()
                         * grid.getTableSizeYAxis()
-                        * percentageToActivate)
+                        * PERCENTAGE_TO_ACTIVATE_SMALL)
                 ) / 100));
         System.out.println(grid.displayCellsInTable());
     }
@@ -267,4 +273,23 @@ public class GameOfLifeTableShould {
         // then
         assertEquals(grid.displayPreviousActiveCellCounts().toString(),("1,1,1,1,1,1,1,1"));
     }
+
+    @Test
+    public void
+    check_for_value_rule(){
+        GameOfLifeRule gameOfLifeRule = GameOfLifeRule.lookUp(1);
+        assertThat(gameOfLifeRule,is(GameOfLifeRule.STANDARD));
+
+        gameOfLifeRule = GameOfLifeRule.lookUp(2);
+        assertThat(gameOfLifeRule,is(GameOfLifeRule.SIERPINSKI));
+
+        gameOfLifeRule = GameOfLifeRule.lookUp(3);
+        assertThat(gameOfLifeRule,is(GameOfLifeRule.HIGH_LIFE));
+
+        for (int i=0;i<10000;i++){
+            assertThat(((int) Math.round(Math.random() * 2) + 1),allOf(greaterThan(0),lessThan(4)));
+        }
+    }
+
+
 }

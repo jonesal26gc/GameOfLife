@@ -16,7 +16,7 @@ public class GameOfLifeShould {
     public void
     run_the_game() {
         try {
-            GameOfLife.run(new GameOfLifeTable(20,20));
+            GameOfLife.run(new GameOfLifeTable(20, 20, 10, GameOfLifeRule.STANDARD));
         } catch (Exception ex) {
         }
 

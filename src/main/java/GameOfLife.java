@@ -15,10 +15,17 @@ public class GameOfLife {
     public static void main(String[] args) {
 
         try {
-            if (args.length == 2) {
-                run(new GameOfLifeTable(Integer.parseInt(args[0]), Integer.parseInt(args[1])));
+            if (args.length == 3) {
+                run(new GameOfLifeTable(Integer.parseInt(args[0]),
+                        Integer.parseInt(args[1]),
+                        Integer.parseInt(args[2])));
+            } else if ( args.length==4) {
+                run(new GameOfLifeTable(Integer.parseInt(args[0]),
+                        Integer.parseInt(args[1]),
+                        Integer.parseInt(args[2]),
+                        GameOfLifeRule.lookUp(Integer.parseInt(args[3]))));
             } else {
-                run(new GameOfLifeTable(135, 67));
+                run(new GameOfLifeTable(135, 67, 50, GameOfLifeRule.STANDARD));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -26,7 +33,7 @@ public class GameOfLife {
     }
 
     public static void run(GameOfLifeTable grid) throws Exception {
-        grid.activatePercentageOfCellsRandomly(50);
+        grid.activatePercentageOfCellsRandomly();
 
         // Declare and open the frame.
         JFrame frame = new JFrame("Game of Life");
@@ -38,9 +45,6 @@ public class GameOfLife {
         int i = 0;
         while (true) {
             i++;
-
-            // update the table, and be conscious of any changes occurring.
-            boolean changesOccurred = grid.tickTableToReviseCells();
 
             // clear the frame content.
             frame.getContentPane().removeAll();
@@ -59,7 +63,7 @@ public class GameOfLife {
                     grid.displayPreviousActiveCellCounts() +
                     ")";
 
-            String topTextMessage = "Ticks: " + String.format("%04d", i);
+            String topTextMessage = "Rule:" +grid.getGameOfLifeRule().getRuleName() + " - Ticks: " + String.format("%04d", i);
             if (gameComplete) {
                 topTextMessage = topTextMessage.concat(gameCompleteMessage);
             }
@@ -76,6 +80,13 @@ public class GameOfLife {
             frame.getContentPane().add(bottomLabelField, BorderLayout.SOUTH);
             frame.pack();
             frame.setVisible(true);
+
+            if ( i == 1) {
+                Thread.sleep(WINDOW_DISPLAY_TIME_IN_MILLISECONDS_SLOW);
+            }
+
+            // update the table, and be conscious of any changes occurring.
+            boolean changesOccurred = grid.tickTableToReviseCells();
 
             // If we have finished or stabilised, then change characteristics of the screen.
             if ((!changesOccurred)
