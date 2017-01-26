@@ -2,10 +2,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class GameOfLifeTable {
-
-    private final static int TABLE_SIZE_X_AXIS_DEFAULT = 96;
-    private final static int TABLE_SIZE_Y_AXIS_DEFAULT = 50;
-    private final static int PERCENTAGE_TO_ACTIVATE_DEFAULT = 50;
     private final int tableSizeXAxis;
     private final int tableSizeYAxis;
     private final int percentageToActivate;
@@ -17,17 +13,10 @@ public class GameOfLifeTable {
     private Queue<Integer> previousActiveCellCounts = new LinkedList<Integer>();
     private static final int HISTORY_SIZE = 12;
 
-    private static final char ON_CHARACTER = Character.valueOf((char) 9608);
-    private static final char OFF_CHARACTER = Character.valueOf((char) 9590);
+    private static final char ON_CHARACTER = 9608;
+    private static final char OFF_CHARACTER = 9590;
     private static final String NEW_LINE = "\n";
 
-    public GameOfLifeTable() {
-        this.tableSizeXAxis = TABLE_SIZE_X_AXIS_DEFAULT;
-        this.tableSizeYAxis = TABLE_SIZE_Y_AXIS_DEFAULT;
-        this.percentageToActivate = PERCENTAGE_TO_ACTIVATE_DEFAULT;
-        this.gameOfLifeRule = GameOfLifeRule.lookUp((int) Math.round(Math.random() * 2) + 1);
-        this.cell = new boolean[tableSizeXAxis][tableSizeYAxis];
-    }
 
     public GameOfLifeTable(int x, int y, int percentageToActivate, GameOfLifeRule gameOfLifeRule) {
         this.tableSizeXAxis = x;
@@ -38,11 +27,7 @@ public class GameOfLifeTable {
     }
 
     public GameOfLifeTable(int x, int y, int percentageToActivate) {
-        this.tableSizeXAxis = x;
-        this.tableSizeYAxis = y;
-        this.percentageToActivate = percentageToActivate;
-        this.gameOfLifeRule = GameOfLifeRule.lookUp((int) Math.round(Math.random() * 2) + 1);
-        this.cell = new boolean[tableSizeXAxis][tableSizeYAxis];
+        this(x, y, percentageToActivate,GameOfLifeRule.lookUp((int) Math.round(Math.random() * 2) + 1));
     }
 
     public int getOriginalActiveCellCount() {
@@ -74,20 +59,20 @@ public class GameOfLifeTable {
     }
 
     public void activateCell(int x, int y) {
-        if (!isCell(x, y)) {
+        if (!isAlive(x, y)) {
             cell[x][y] = true;
             activeCellCount++;
         }
     }
 
     public void deactivateCell(int x, int y) {
-        if (isCell(x, y)) {
+        if (isAlive(x, y)) {
             cell[x][y] = false;
             activeCellCount--;
         }
     }
 
-    public boolean isCell(int x, int y) {
+    public boolean isAlive(int x, int y) {
         try {
             return cell[x][y];
         } catch (ArrayIndexOutOfBoundsException ex) {
@@ -135,93 +120,36 @@ public class GameOfLifeTable {
     }
 
     public boolean tickCellToDetermineAliveOrDead(int x, int y) {
-        switch (gameOfLifeRule) {
-            case STANDARD:
-                if (isCell(x, y)) {
-                    switch (countNeighbouringCells(x, y)) {
-                        case 2:
-                            return true;
-                        case 3:
-                            return true;
-                        default:
-                            return false;
-                    }
-                } else {
-                    switch (countNeighbouringCells(x, y)) {
-                        case 3:
-                            return true;
-                        default:
-                            return false;
-                    }
-                }
-            case SIERPINSKI:
-                if (isCell(x, y)) {
-                    switch (countNeighbouringCells(x, y)) {
-                        case 1:
-                            return true;
-                        case 2:
-                            return true;
-                        default:
-                            return false;
-                    }
-                } else {
-                    switch (countNeighbouringCells(x, y)) {
-                        case 1:
-                            return true;
-                        default:
-                            return false;
-                    }
-                }
-            case HIGH_LIFE:
-                if (isCell(x, y)) {
-                    switch (countNeighbouringCells(x, y)) {
-                        case 2:
-                            return true;
-                        case 3:
-                            return true;
-                        default:
-                            return false;
-                    }
-                } else {
-                    switch (countNeighbouringCells(x, y)) {
-                        case 3:
-                            return true;
-                        case 6:
-                            return true;
-                        default:
-                            return false;
-                    }
-                }
-            default:
-                return false;
-        }
+        int neighbourCount = countNeighbouringCells(x, y);
+        boolean isAlive = isAlive(x, y);
+        return gameOfLifeRule.isAfterTick(neighbourCount, isAlive);
     }
 
     public int countNeighbouringCells(int x, int y) {
         int neighbouringCellCount = 0;
 
-        if (isCell(x - 1, y + 1)) {
+        if (isAlive(x - 1, y + 1)) {
             neighbouringCellCount++;
         }
-        if (isCell(x, y + 1)) {
+        if (isAlive(x, y + 1)) {
             neighbouringCellCount++;
         }
-        if (isCell(x + 1, y + 1)) {
+        if (isAlive(x + 1, y + 1)) {
             neighbouringCellCount++;
         }
-        if (isCell(x - 1, y)) {
+        if (isAlive(x - 1, y)) {
             neighbouringCellCount++;
         }
-        if (isCell(x + 1, y)) {
+        if (isAlive(x + 1, y)) {
             neighbouringCellCount++;
         }
-        if (isCell(x - 1, y - 1)) {
+        if (isAlive(x - 1, y - 1)) {
             neighbouringCellCount++;
         }
-        if (isCell(x, y - 1)) {
+        if (isAlive(x, y - 1)) {
             neighbouringCellCount++;
         }
-        if (isCell(x + 1, y - 1)) {
+        if (isAlive(x + 1, y - 1)) {
             neighbouringCellCount++;
         }
         return neighbouringCellCount;
@@ -233,7 +161,7 @@ public class GameOfLifeTable {
         for (int y = (tableSizeYAxis - 1); y >= 0; y--) {
             consoleOutput.append(" ");
             for (int x = 0; x < tableSizeXAxis; x++) {
-                if (isCell(x, y)) {
+                if (isAlive(x, y)) {
                     consoleOutput.append(ON_CHARACTER);
                 } else {
                     consoleOutput.append(OFF_CHARACTER);

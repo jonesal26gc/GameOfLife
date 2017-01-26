@@ -1,6 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
 
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
+
 public class GameOfLife {
 
     private static final String[] FONT_OPTION = {"Serif", "Agency FB", "Arial", "Calibri", "Cambrian"
@@ -13,23 +15,38 @@ public class GameOfLife {
     private static final int WINDOW_DISPLAY_TIME_IN_MILLISECONDS_SLOW = 1200;
 
     public static void main(String[] args) {
-
         try {
-            if (args.length == 3) {
-                run(new GameOfLifeTable(Integer.parseInt(args[0]),
-                        Integer.parseInt(args[1]),
-                        Integer.parseInt(args[2])));
-            } else if ( args.length==4) {
-                run(new GameOfLifeTable(Integer.parseInt(args[0]),
-                        Integer.parseInt(args[1]),
-                        Integer.parseInt(args[2]),
-                        GameOfLifeRule.lookUp(Integer.parseInt(args[3]))));
-            } else {
-                run(new GameOfLifeTable(135, 67, 50, GameOfLifeRule.STANDARD));
-            }
+            run(constructGameFrom(args));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    private static GameOfLifeTable constructGameFrom(String[] args) {
+        if (args.length == 3) {
+            return randomGameWithDimensionFrom(args);
+        }
+        if (args.length == 4) {
+            return randomGameWithDimensionsAndPatternFrom(args);
+        }
+        return defaultGame();
+    }
+
+    private static GameOfLifeTable defaultGame() {
+        return new GameOfLifeTable(135, 67, 50, GameOfLifeRule.STANDARD);
+    }
+
+    private static GameOfLifeTable randomGameWithDimensionsAndPatternFrom(String[] args) {
+        return new GameOfLifeTable(Integer.parseInt(args[0]),
+                Integer.parseInt(args[1]),
+                Integer.parseInt(args[2]),
+                GameOfLifeRule.lookUp(Integer.parseInt(args[3])));
+    }
+
+    private static GameOfLifeTable randomGameWithDimensionFrom(String[] args) {
+        return new GameOfLifeTable(Integer.parseInt(args[0]),
+                Integer.parseInt(args[1]),
+                Integer.parseInt(args[2]));
     }
 
     public static void run(GameOfLifeTable grid) throws Exception {
@@ -37,15 +54,12 @@ public class GameOfLife {
 
         // Declare and open the frame.
         JFrame frame = new JFrame("Game of Life");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         boolean gameComplete = false;
         String gameCompleteMessage = "";
 
-        int i = 0;
-        while (true) {
-            i++;
-
+        for (int generation = 1; true; generation++) {
             // clear the frame content.
             frame.getContentPane().removeAll();
             //frame.setVisible(false);
@@ -63,7 +77,7 @@ public class GameOfLife {
                     grid.displayPreviousActiveCellCounts() +
                     ")";
 
-            String topTextMessage = "Rule:" +grid.getGameOfLifeRule().getRuleName() + " - Ticks: " + String.format("%04d", i);
+            String topTextMessage = String.format("Rule:%s - Ticks: %04d", grid.getGameOfLifeRule().getRuleName(), generation);
             if (gameComplete) {
                 topTextMessage = topTextMessage.concat(gameCompleteMessage);
             }
@@ -81,7 +95,7 @@ public class GameOfLife {
             frame.pack();
             frame.setVisible(true);
 
-            if ( i == 1) {
+            if (generation == 1) {
                 Thread.sleep(WINDOW_DISPLAY_TIME_IN_MILLISECONDS_SLOW);
             }
 
@@ -93,7 +107,7 @@ public class GameOfLife {
                     || grid.getActiveCellCount() == 0
                     || grid.isCellMovementStabilised()) {
                 if (!gameComplete) {
-                    gameCompleteMessage = " - Stabilised after " + i + " ticks.";
+                    gameCompleteMessage = " - Stabilised after " + generation + " ticks.";
                     gameComplete = true;
                 }
             }

@@ -13,7 +13,9 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class GameOfLifeTableShould {
-
+    private final static int TABLE_SIZE_X_AXIS_DEFAULT = 96;
+    private final static int TABLE_SIZE_Y_AXIS_DEFAULT = 50;
+    private final static int PERCENTAGE_TO_ACTIVATE_DEFAULT = 50;
     public static final int PERCENTAGE_TO_ACTIVATE_SMALL =25;
     public static final int TABLE_AXIS_VALUE_SMALL = 5;
 
@@ -219,7 +221,7 @@ public class GameOfLifeTableShould {
         grid.tickTableToReviseCells();
 
         // then
-        assertThat(grid.isCell(2, 1), is(true));
+        assertThat(grid.isAlive(2, 1), is(true));
         assertThat(grid.getActiveCellCount(), is(3));
     }
 
@@ -246,7 +248,7 @@ public class GameOfLifeTableShould {
     public void
     check_for_repeating_pattern_signifying_stability() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable();
+        GameOfLifeTable grid = defaultGame();
 
         Queue<Integer> queue = new LinkedList<Integer>();
         for (int i = 0; i < GameOfLifeTable.getHistorySize(); i++) {
@@ -262,7 +264,7 @@ public class GameOfLifeTableShould {
     public void
     display_active_cell_history() {
         // given
-        GameOfLifeTable grid = new GameOfLifeTable();
+        GameOfLifeTable grid = defaultGame();
 
         Queue<Integer> queue = new LinkedList<Integer>();
         for (int i = 0; i < GameOfLifeTable.getHistorySize(); i++) {
@@ -291,5 +293,8 @@ public class GameOfLifeTableShould {
         }
     }
 
-
+    private GameOfLifeTable defaultGame() {
+        return new GameOfLifeTable(TABLE_SIZE_X_AXIS_DEFAULT,TABLE_SIZE_Y_AXIS_DEFAULT,PERCENTAGE_TO_ACTIVATE_DEFAULT,
+                GameOfLifeRule.lookUp((int) Math.round(Math.random() * 2) + 1));
+    }
 }
