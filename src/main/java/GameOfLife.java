@@ -13,6 +13,7 @@ public class GameOfLife {
     private static final int WINDOW_DISPLAY_TIME_IN_MILLISECONDS_FAST = 250;
     private static final int WINDOW_DISPLAY_TIME_IN_MILLISECONDS_MEDIUM = 500;
     private static final int WINDOW_DISPLAY_TIME_IN_MILLISECONDS_SLOW = 1200;
+    private static final String NEW_LINE = "\n";
 
     public static void main(String[] args) {
         try {
@@ -60,7 +61,7 @@ public class GameOfLife {
         boolean gameComplete = false;
         String gameCompleteMessage = "";
 
-        for (int tick = 1; true; tick++) {
+        for (int tickCount = 1; true; tickCount++) {
             // clear the frame content.
             frame.getContentPane().removeAll();
 
@@ -70,32 +71,33 @@ public class GameOfLife {
             textField.setFont(new Font(FONT_OPTION[7], Font.BOLD, SIZE_OPTION[2]));
             textField.setEditable(false);
 
+            String firstLineText = String.format("Rule:%s - Ticks: %04d", grid.getGameOfLifeRule().getName(), tickCount);
+            if (gameComplete) {
+                firstLineText = firstLineText.concat(gameCompleteMessage);
+            }
+
+            JLabel firstLabelField = new JLabel(firstLineText);
+            firstLabelField.setHorizontalAlignment(SwingConstants.CENTER);
+
             // Declare a label field.
-            String textMessage = grid.getActiveCellCount() +
+            String lastLineText = grid.getActiveCellCount() +
                     " cells, was " +
                     grid.getOriginalActiveCellCount() + " (....." +
                     grid.displayPreviousEightActiveCellCounts() +
                     ")";
 
-            String topTextMessage = String.format("Rule:%s - Ticks: %04d", grid.getGameOfLifeRule().getRuleName(), tick);
-            if (gameComplete) {
-                topTextMessage = topTextMessage.concat(gameCompleteMessage);
-            }
-            JLabel topLabelField = new JLabel(topTextMessage);
-            topLabelField.setHorizontalAlignment(SwingConstants.CENTER);
-
             // declare the lower text label.
-            JLabel bottomLabelField = new JLabel(textMessage);
-            bottomLabelField.setHorizontalAlignment(SwingConstants.CENTER);
+            JLabel lastLabelField = new JLabel(lastLineText);
+            lastLabelField.setHorizontalAlignment(SwingConstants.CENTER);
 
             // add content to the frame and display the screen.
-            frame.getContentPane().add(topLabelField, BorderLayout.NORTH);
+            frame.getContentPane().add(firstLabelField, BorderLayout.NORTH);
             frame.getContentPane().add(textField, BorderLayout.CENTER);
-            frame.getContentPane().add(bottomLabelField, BorderLayout.SOUTH);
+            frame.getContentPane().add(lastLabelField, BorderLayout.SOUTH);
             frame.pack();
             frame.setVisible(true);
 
-            if (tick == 1) {
+            if (tickCount == 1) {
                 Thread.sleep(WINDOW_DISPLAY_TIME_IN_MILLISECONDS_SLOW);
             }
 
@@ -107,7 +109,7 @@ public class GameOfLife {
                     || grid.getActiveCellCount() == 0
                     || grid.isCellMovementStable()) {
                 if (!gameComplete) {
-                    gameCompleteMessage = " - Stabilised after " + tick + " ticks.";
+                    gameCompleteMessage = " - Stabilised after " + tickCount + " ticks.";
                     gameComplete = true;
                 }
             }
