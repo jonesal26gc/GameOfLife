@@ -27,7 +27,7 @@ public class GameOfLifeTable {
     }
 
     public GameOfLifeTable(int x, int y, int percentageToActivate) {
-        this(x, y, percentageToActivate, GameOfLifeRule.lookUp((int) Math.round(Math.random() * 2) + 1));
+        this(x, y, percentageToActivate, GameOfLifeRule.lookUp((int) Math.round(Math.random() * 2)));
     }
 
     public int getOriginalActiveCellCount() {
