@@ -279,13 +279,13 @@ public class GameOfLifeTableShould {
     @Test
     public void
     check_for_value_rule(){
-        GameOfLifeRule gameOfLifeRule = GameOfLifeRule.lookUp(1);
+        GameOfLifeRule gameOfLifeRule = GameOfLifeRule.lookUp(0);
         assertThat(gameOfLifeRule,is(GameOfLifeRule.STANDARD));
 
-        gameOfLifeRule = GameOfLifeRule.lookUp(2);
+        gameOfLifeRule = GameOfLifeRule.lookUp(1);
         assertThat(gameOfLifeRule,is(GameOfLifeRule.SIERPINSKI));
 
-        gameOfLifeRule = GameOfLifeRule.lookUp(3);
+        gameOfLifeRule = GameOfLifeRule.lookUp(2);
         assertThat(gameOfLifeRule,is(GameOfLifeRule.HIGH_LIFE));
 
         for (int i=0;i<10000;i++){
@@ -295,6 +295,6 @@ public class GameOfLifeTableShould {
 
     private GameOfLifeTable defaultGame() {
         return new GameOfLifeTable(TABLE_SIZE_X_AXIS_DEFAULT,TABLE_SIZE_Y_AXIS_DEFAULT,PERCENTAGE_TO_ACTIVATE_DEFAULT,
-                GameOfLifeRule.lookUp((int) Math.round(Math.random() * 2) + 1));
+                GameOfLifeRule.lookUp((int) Math.round(Math.random() * 2)));
     }
 }
