@@ -5,6 +5,7 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class GameOfLife {
 
+    public static final int STABILISED = 5;
     private static final String[] FONT_OPTION = {"Serif", "Agency FB", "Arial", "Calibri", "Cambrian"
             , "Century Gothic", "Comic Sans MS", "Courier New"
             , "Forte", "Garamond", "Monospaced", "Segoe UI"
@@ -13,7 +14,8 @@ public class GameOfLife {
     private static final int WINDOW_DISPLAY_TIME_IN_MILLISECONDS_FAST = 250;
     private static final int WINDOW_DISPLAY_TIME_IN_MILLISECONDS_MEDIUM = 500;
     private static final int WINDOW_DISPLAY_TIME_IN_MILLISECONDS_SLOW = 1200;
-    private static final String NEW_LINE = "\n";
+    private static final int MAINTAIN_STABILISED_MODE_IN_TICKS = 60;
+    private static int tickCountAtStabilisation = 0;
 
     public static void main(String[] args) {
         try {
@@ -106,16 +108,20 @@ public class GameOfLife {
 
             // If we have finished or stabilised, then change characteristics of the screen.
             if ((!changesOccurred)
-                    || grid.getActiveCellCount() == 0
-                    || grid.isCellMovementStable()) {
+                    | grid.getActiveCellCount() == 0
+                    | grid.isCellMovementStable()) {
                 if (!gameComplete) {
                     gameCompleteMessage = " - Stabilised after " + tickCount + " ticks.";
                     gameComplete = true;
+                    tickCountAtStabilisation = tickCount;
+                }
+                if ((tickCount - tickCountAtStabilisation) >= MAINTAIN_STABILISED_MODE_IN_TICKS){
+                    break;
                 }
             }
             Thread.sleep(determineSleepPeriodBetweenDisplays(grid, gameComplete));
         }
-        //frame.dispose();
+        frame.dispose();
     }
 
     private static int determineSleepPeriodBetweenDisplays(GameOfLifeTable grid, boolean gameComplete) {
